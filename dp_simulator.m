@@ -80,7 +80,8 @@ parfor h = 1:loopcount
     parti = randperm(nodecount,participants);
     
     % merchant must participate! 
-    parti = unique([parti 3]);
+    % tx1 at merchant node
+    parti = unique([parti 1]);
     
     % start a connections table for this loop
     conntable = [];
@@ -280,7 +281,7 @@ parfor h = 1:loopcount
         count = count + 1;
         % escape if node 1 has 1003 or limit is reached
         
-        if ismember(1003,coinnet(3).mempool)
+        if ismember(1003,coinnet(1).mempool)
             break
         elseif count >= limit
             break
