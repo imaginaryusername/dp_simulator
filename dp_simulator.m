@@ -75,6 +75,7 @@ p = parpool(parnum);
 parfor h = 1:loopcount
     disp(['loop' num2str(h)])
     coinnet = struct;
+    coinnetold = struct;
     
     % pick participants at random
     parti = randperm(nodecount,participants);
@@ -167,17 +168,17 @@ parfor h = 1:loopcount
             gen = false;
         end
         
-        % add a random tx, count of which determined by txflow, to a random
-        % node
-        for g = 1:txflow
-            randomnode = randperm(nodecount,1);
-            coinnet(randomnode).mempool = [coinnet(randomnode).mempool,randtx];
-            for j = 1:size(coinnet(randomnode).conn,2)
-                coinnet(randomnode).conn(j).inv = [coinnet(randomnode).conn(j).inv,randtx];
-            end
-            % increment randtx "id"
-            randtx = randtx + 1;
-        end
+%        % add a random tx, count of which determined by txflow, to a random
+%        % node
+%        for g = 1:txflow
+%            randomnode = randperm(nodecount,1);
+%            coinnet(randomnode).mempool = [coinnet(randomnode).mempool,randtx];
+%            for j = 1:size(coinnet(randomnode).conn,2)
+%                coinnet(randomnode).conn(j).inv = [coinnet(randomnode).conn(j).inv,randtx];
+%            end
+%            % increment randtx "id"
+%            randtx = randtx + 1;
+%        end
         
         % add tx in flight from previous round to mempool and inv of its destination
         for i = 1:nodecount
@@ -285,7 +286,12 @@ parfor h = 1:loopcount
             break
         elseif count >= limit
             break
+        elseif isequaln(coinnetold,coinnet) % break if network is not longer moving
+            count = limit;
+            break
         end
+        % reserve this state for comparison next state
+        coinnetold = coinnet;
     end
     
     
